@@ -25,8 +25,10 @@ class App:
         hostname = socket.gethostname()
         IPAddr = socket.gethostbyname(hostname)
         print(f"{colors.HEADER}Welcome to Bitvavo Trading Bot, created by Noah Wilderom{colors.END}")
-        print(f"{colors.CYAN}Your Computer Name is:{colors.END} {hostname}")
-        print(f"{colors.CYAN}Your Computer IP Address is:{colors.END} {IPAddr}")
+        if self.OS == 'Windows':
+            print(f"{colors.CYAN}Your Computer Name is:{colors.END} {hostname}")
+            print(f"{colors.CYAN}Your Computer IP Address is:{colors.END} {IPAddr}")
+
         print(f"{colors.CYAN}OS:{colors.END} {self.OS}")
         if len(self.config["API_KEY"]) == 64 and len(self.config["API_KEY_SECRET"]) == 128:
             print(f"{colors.GREEN}Api Key is set{colors.END}")
