@@ -22,10 +22,10 @@ class App:
         self.runCommand()
 
     def load(self):
-        hostname = socket.gethostname()
-        IPAddr = socket.gethostbyname(hostname)
         print(f"{colors.HEADER}Welcome to Bitvavo Trading Bot, created by Noah Wilderom{colors.END}")
         if self.OS == 'Windows':
+            hostname = socket.gethostname()
+            IPAddr = socket.gethostbyname(hostname)
             print(f"{colors.CYAN}Your Computer Name is:{colors.END} {hostname}")
             print(f"{colors.CYAN}Your Computer IP Address is:{colors.END} {IPAddr}")
 
