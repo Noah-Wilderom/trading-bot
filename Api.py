@@ -148,14 +148,8 @@ class Api:
     def coins(self):
         bitvavo = self.open_connection()
         trades = bitvavo.markets({})
-        
-        coins = []
-        
-        for x in trades:
-            if x['status'] == 'trading':
-                coins.append(x)
-        
-        return coins
+    
+        return trades
 
     @staticmethod
     def captcha(length = 12):

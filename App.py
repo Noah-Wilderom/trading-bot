@@ -68,11 +68,7 @@ class App:
     def printCoins(self):
         api = Api()
         coins = api.coins()
-        i = 1
-        for x in coins:
-            x['id'] = i
-            print(f"<option value='{x['id']}'>{x['market']}</option>")
-            i += 1
+        print(json.dumps(coins))
 
     def prompt(self):
         print("\n")
