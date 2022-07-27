@@ -3,6 +3,7 @@
 # License: Only for private use!
 
 from App import App
+import sys
 
-app = App()
+app = App(sys.argv)
 app.run()

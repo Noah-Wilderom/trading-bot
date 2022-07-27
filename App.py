@@ -6,20 +6,31 @@ from Color import colors
 
 class App:
 
-    def __init__(self):
+    def __init__(self, args):
         self.OS = sys.platform
         self.setOs()
+        self.args = args
         with open('./config.json') as file:
             self.config = json.load(file)
         self.AvailableCommands = self.GetAvailableCommands()
 
     def run(self):
+        self.setOptions()
         self.clearConsole()
         self.load()
         self.prompt()
-
-
         self.runCommand()
+        
+    def setOptions(self):
+        options = {
+            "--version"
+        }
+        
+        for option in options:
+            if option in self.args:
+                if option == '--version':
+                    print(self.config['version'])
+                    exit()
 
     def load(self):
         print(f"{colors.HEADER}Welcome to Bitvavo Trading Bot, created by Noah Wilderom{colors.END}")
