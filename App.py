@@ -13,13 +13,15 @@ class App:
         with open('./config.json') as file:
             self.config = json.load(file)
         self.AvailableCommands = self.GetAvailableCommands()
+        self.web = False
 
     def run(self):
         self.setOptions()
-        self.clearConsole()
-        self.load()
-        self.prompt()
-        self.runCommand()
+        if not self.web:
+            self.clearConsole()
+            self.load()
+            self.prompt()
+            self.runCommand()
         
     def setOptions(self):
         options = {
@@ -39,8 +41,9 @@ class App:
                 if option == '--web':
                     api = Api()
                     api.web_trade_loop(self.args)
+                    self.web = True
                     
-        exit()
+
 
     def load(self):
         print(f"{colors.HEADER}Welcome to Bitvavo Trading Bot, created by Noah Wilderom{colors.END}")

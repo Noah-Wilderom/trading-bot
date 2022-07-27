@@ -170,15 +170,20 @@ class Api:
         return "".join(captcha)
     
     @staticmethod
-    def send_to_web(url, method = 'get', params = {}):
+    def send_to_web(url, method = 'get', data = {}):
         headers = {
-            'Accept': 'application/json',
+            'Content-Type' : 'application/json',
+            'Charset' : 'utf-8'
         }
         
-        if method == 'get':    
-            return json.load(requests.get(url=f"http://dev.noahdev.nl/api{url}").content, params=params, headers=headers)
+        if method == 'get':
+            request = requests.get(url=f"http://dev.noahdev.nl/api{url}", params=data, headers=headers)
+            print(request)
+            return json.loads(request.content)
         if method == 'post':
-            return json.load(requests.post(url=f"http://dev.noahdev.nl/api{url}").content, params=params, headers=headers)
+            request = requests.get(url=f"http://dev.noahdev.nl/api{url}", params=data, headers=headers)
+            print(request)    
+            return json.loads(request.content)
     
     @staticmethod
     def get_web_info(uuid):
@@ -204,6 +209,7 @@ class Api:
         price = float(bitvavo.tickerPrice({'market': market})['price'])
         web_data = Api.get_web_info(uuid)
         web_data['online'] = True
+        print(json.dumps(web_data))
         Api.send_to_web(f"/bot/update/{uuid}", 'post', { "log": json.dumps(web_data) })
         
         while web_data['online']:
@@ -235,8 +241,9 @@ class Api:
                 log.write(f"\n[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}] Buying for {price}")
                 log.close()
             # 2 Minutes
-            Api.send_to_web(f"/bot/update/{uuid}", 'post', { "log": json.dumps(web_data) })
+            print(web_data)
             time.sleep(web_data['interval'])
+            Api.send_to_web(f"/bot/update/{uuid}", 'post', { "log": json.dumps(web_data) })
 
             
 
