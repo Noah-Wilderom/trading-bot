@@ -6,7 +6,7 @@ from Color import colors
 
 class App:
 
-    def __init__(self, args):
+    def __init__(self, args = None):
         self.OS = sys.platform
         self.setOs()
         self.args = args
@@ -23,13 +23,17 @@ class App:
         
     def setOptions(self):
         options = {
-            "--version"
+            "--version",
+            "--coins"
         }
         
         for option in options:
             if option in self.args:
                 if option == '--version':
                     print(self.config['version'])
+                    exit()
+                if option == '--coins':
+                    self.printCoins()
                     exit()
 
     def load(self):
@@ -60,6 +64,15 @@ class App:
             os.system('cls')
         else:
             os.system('clear')
+            
+    def printCoins(self):
+        api = Api()
+        coins = api.coins()
+        i = 1
+        for x in coins:
+            x['id'] = i
+            print(f"<option value='{x['id']}'>{x['market']}</option>")
+            i += 1
 
     def prompt(self):
         print("\n")

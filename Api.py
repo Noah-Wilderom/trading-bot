@@ -145,6 +145,17 @@ class Api:
         else:
             print(f"{colors.FAIL}Aborting...{colors.END}")
 
+    def coins(self):
+        bitvavo = self.open_connection()
+        trades = bitvavo.markets({})
+        
+        coins = []
+        
+        for x in trades:
+            if x['status'] == 'trading':
+                coins.append(x)
+        
+        return coins
 
     @staticmethod
     def captcha(length = 12):
