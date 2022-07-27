@@ -5,6 +5,7 @@ import datetime
 import App
 from random import randint
 import time
+import requests
 
 
 class Api:
@@ -167,3 +168,75 @@ class Api:
                 captcha.append(ints[randint(0, len(ints) - 1)])
 
         return "".join(captcha)
+    
+    @staticmethod
+    def send_to_web(url, method = 'get', params = {}):
+        headers = {
+            'Accept': 'application/json',
+        }
+        
+        if method == 'get':    
+            return json.load(requests.get(url=f"http://dev.noahdev.nl/api{url}").content, params=params, headers=headers)
+        if method == 'post':
+            return json.load(requests.post(url=f"http://dev.noahdev.nl/api{url}").content, params=params, headers=headers)
+    
+    @staticmethod
+    def get_web_info(uuid):
+        return Api.send_to_web(f"/bot/{uuid}")
+    
+    def web_trade_loop(self, args):
+        bitvavo = self.open_connection()
+
+        for arg in args:
+            if '--market' in arg:
+                market = arg.replace('--market=', '')
+                print('success', market)
+            if '--sell' in arg:
+                sell = float(arg.replace('--sell=', ''))
+                print('success', sell)
+            if '--buy' in arg:
+                buy = float(arg.replace('--buy=', ''))
+                print('success', buy)
+            if '--uuid' in arg:
+                uuid = arg.replace('--uuid=', '')
+                print('success', uuid)
+                
+        price = float(bitvavo.tickerPrice({'market': market})['price'])
+        web_data = Api.get_web_info(uuid)
+        web_data['online'] = True
+        Api.send_to_web(f"/bot/update/{uuid}", 'post', { "log": json.dumps(web_data) })
+        
+        while web_data['online']:
+            web_data = Api.get_web_info(uuid)
+            price = float(bitvavo.tickerPrice({'market': market})['price'])
+            log = {
+                "log": f"[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}]{market} -> {price}"
+            }
+            money = 5
+            Api.send_to_web(f"/bot/log/{uuid}", 'post', log)
+            if price > sell:
+                log = {
+                    "log": f"[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}] Selling {market} for {price}"
+                }
+                Api.send_to_web(f"/bot/log/{uuid}", 'post', log)
+                web_data['total_profit'] = web_data['total_profit'] + (price * money)
+                log = open(f"./logs/{uuid}.log", 'a')
+                log.write(f"\n[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}] Selling for {price}")
+                log.close()
+
+            if price < buy:
+                log = {
+                    "log": f"[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}] Buying {market} for {price}"
+                }
+                Api.send_to_web(f"/bot/log/{uuid}", 'post', log)
+                web_data['total_profit'] = web_data['total_profit'] - (price * money)
+
+                log = open(f"./logs/{uuid}.log", 'a')
+                log.write(f"\n[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}] Buying for {price}")
+                log.close()
+            # 2 Minutes
+            Api.send_to_web(f"/bot/update/{uuid}", 'post', { "log": json.dumps(web_data) })
+            time.sleep(web_data['interval'])
+
+            
+

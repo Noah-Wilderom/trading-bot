@@ -24,7 +24,8 @@ class App:
     def setOptions(self):
         options = {
             "--version",
-            "--coins"
+            "--coins",
+            '--web'
         }
         
         for option in options:
@@ -35,6 +36,11 @@ class App:
                 if option == '--coins':
                     self.printCoins()
                     exit()
+                if option == '--web':
+                    api = Api()
+                    api.web_trade_loop(self.args)
+                    
+        exit()
 
     def load(self):
         print(f"{colors.HEADER}Welcome to Bitvavo Trading Bot, created by Noah Wilderom{colors.END}")
