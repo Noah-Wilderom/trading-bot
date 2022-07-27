@@ -1,0 +1,22 @@
+name: Build To Production
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  job_one:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy
+      uses: fifsky/ssh-action@master
+      with:
+        command: |
+          cd /home/noahdev/tradingbot
+          git pull origin master
+        host: 5.181.134.239
+        user: root
+        key: ${{ secrets.RSA_VPS_GROOT_KEY }}
+        port: 22
+        args: "-tt -vvv"
