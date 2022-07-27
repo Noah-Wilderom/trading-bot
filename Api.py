@@ -88,9 +88,12 @@ class Api:
         trades = bitvavo.markets({})
         i = 1
         for v in trades:
-            v['id'] = i
-            print(f"{colors.HEADER}[{v['id']}] {colors.WARNING}{v['market']}{colors.END}")
-            i = i + 1
+            if v['status'] == 'trading':
+                v['id'] = i
+                print(f"{colors.HEADER}[{v['id']}] {colors.WARNING}{v['market']}{colors.END}")
+                i = i + 1
+            else:
+                v['id'] = None
 
         market = None
 
@@ -98,7 +101,7 @@ class Api:
             option = input(">> ")
             if option.isdigit():
                 for x in trades:
-                    if x['id'] == int(option):
+                    if x['id'] == int(option) or x['market'] == option:
                         market = x
 
         app.clearConsole()
