@@ -190,7 +190,6 @@ class Api:
         return Api.send_to_web(f"/bot/{uuid}")
     
     def web_trade_loop(self, args):
-        bitvavo = self.open_connection()
 
         for arg in args:
             if '--market' in arg:
@@ -205,11 +204,16 @@ class Api:
             if '--uuid' in arg:
                 uuid = arg.replace('--uuid=', '')
                 print('success', uuid)
+            if '--api_key' in arg:
+                self.ApiKey = arg.replace('--api_key=', '')
+            if '--api_secret_key' in arg:
+                self.ApiKeySecret = arg.replace('--api_secret_key=', '')
                 
+        bitvavo = self.open_connection()
         price = float(bitvavo.tickerPrice({'market': market})['price'])
         web_data = Api.get_web_info(uuid)
         web_data['online'] = True
-        print(json.dumps(web_data))
+        print({ "log": json.dumps(web_data) })
         Api.send_to_web(f"/bot/update/{uuid}", 'post', { "log": json.dumps(web_data) })
         
         while web_data['online']:
