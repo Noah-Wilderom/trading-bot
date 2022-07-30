@@ -14,6 +14,8 @@ class Api:
             self.config = json.load(file)
         self.ApiKey = self.config["API_KEY"]
         self.ApiKeySecret = self.config["API_KEY_SECRET"]
+        self.DemoMode = False
+        self.MaxMoney = None
 
     def test_connection(self):
         bitvavo = self.open_connection()
@@ -208,6 +210,10 @@ class Api:
                 self.ApiKey = arg.replace('--api_key=', '')
             if '--api_secret_key' in arg:
                 self.ApiKeySecret = arg.replace('--api_secret_key=', '')
+            if '--demo_mode' in arg:
+                self.DemoMode = True
+            if '--max_money' in arg:
+                self.MaxMoney = arg.replace('--max_money=', '')
                 
         bitvavo = self.open_connection()
         price = float(bitvavo.tickerPrice({'market': market})['price'])
@@ -215,39 +221,62 @@ class Api:
         web_data['online'] = True
         print({ "log": json.dumps(web_data) })
         Api.send_to_web(f"/bot/update/{uuid}", 'post', { "log": json.dumps(web_data) })
-        
+        stake_money = 5
+        self.MaxMoney = self.MaxMoney or 10
+        current_money = 0
         while web_data['online']:
             web_data = Api.get_web_info(uuid)
             price = float(bitvavo.tickerPrice({'market': market})['price'])
             log = {
                 "log": f"[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}]{market} -> {price}"
             }
-            money = 5
+
             Api.send_to_web(f"/bot/log/{uuid}", 'post', log)
             if price > sell:
                 log = {
                     "log": f"[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}] Selling {market} for {price}"
                 }
+                if (current_money - stake_money) < 0:
+                    log = {
+                        "log": f"[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}] Not Selling -> Current money ({current_money}) - Stake money ({stake_money}) = {(current_money - stake_money)}"
+                    }
+                    Api.send_to_web(f"/bot/log/{uuid}", 'post', log)
+                    continue
+
                 Api.send_to_web(f"/bot/log/{uuid}", 'post', log)
-                web_data['total_profit'] = web_data['total_profit'] + (price * money)
+                web_data['total_profit'] = web_data['total_profit'] + (stake_money / price)
                 log = open(f"./logs/{uuid}.log", 'a')
                 log.write(f"\n[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}] Selling for {price}")
                 log.close()
+                current_money -= stake_money
+                if not self.DemoMode:
+                    # Sell
+                    pass
+
+
 
             if price < buy:
                 log = {
                     "log": f"[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}] Buying {market} for {price}"
                 }
+                if (current_money + stake_money) > self.MaxMoney:
+                    log = {
+                        "log": f"[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}] Not Buying -> Current money ({current_money}) + Stake money ({stake_money}) = {(current_money + stake_money)} > {self.MaxMoney}"
+                    }
+                    Api.send_to_web(f"/bot/log/{uuid}", 'post', log)
+                    continue
                 Api.send_to_web(f"/bot/log/{uuid}", 'post', log)
-                web_data['total_profit'] = web_data['total_profit'] - (price * money)
+                web_data['total_profit'] = web_data['total_profit'] - (stake_money / price)
 
                 log = open(f"./logs/{uuid}.log", 'a')
                 log.write(f"\n[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}] Buying for {price}")
                 log.close()
+                current_money += stake_money
+                if not self.DemoMode:
+                    # Buy
+                    pass
             # 2 Minutes
             print(web_data)
             time.sleep(web_data['interval'])
             Api.send_to_web(f"/bot/update/{uuid}", 'post', { "log": json.dumps(web_data) })
-
-            
 
