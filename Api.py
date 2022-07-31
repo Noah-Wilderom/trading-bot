@@ -241,6 +241,7 @@ class Api:
                         "log": f"[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}] Not Selling -> Current money ({current_money}) - Stake money ({stake_money}) = {(current_money - stake_money)}"
                     }
                     Api.send_to_web(f"/bot/log/{uuid}", 'post', log)
+                    time.sleep(web_data['interval'])
                     continue
 
                 Api.send_to_web(f"/bot/log/{uuid}", 'post', log)
@@ -277,6 +278,6 @@ class Api:
                     pass
             # 2 Minutes
             print(web_data)
-            time.sleep(web_data['interval'])
             Api.send_to_web(f"/bot/update/{uuid}", 'post', { "log": json.dumps(web_data) })
+            time.sleep(web_data['interval'])
 
