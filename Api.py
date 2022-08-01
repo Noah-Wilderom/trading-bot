@@ -260,7 +260,7 @@ class Api:
                 log = {
                     "log": f"[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}] Buying {market} for {price}"
                 }
-                if (current_money + stake_money) > self.MaxMoney:
+                if (current_money + stake_money) > int(self.MaxMoney):
                     log = {
                         "log": f"[{datetime.datetime.now().strftime('%H:%M:%S %d-%m-%Y')}] Not Buying -> Current money ({current_money}) + Stake money ({stake_money}) = {(current_money + stake_money)} > {self.MaxMoney}"
                     }
