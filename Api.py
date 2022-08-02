@@ -253,7 +253,7 @@ class Api:
                 current_money -= stake_money
                 if not self.DemoMode:
                     # Sell
-                    bitvavo.placeOrder(market, 'sell', 'market', str(stake_money))
+                    print(bitvavo.placeOrder(market, 'sell', 'market', { 'amount': str(stake_money // price) }))
 
 
 
@@ -276,7 +276,7 @@ class Api:
                 current_money += stake_money
                 if not self.DemoMode:
                     # Buy
-                    bitvavo.placeOrder(market, 'buy', 'market', str(stake_money))
+                    print(bitvavo.placeOrder(market, 'buy', 'market', { 'amount': str( (stake_money) // price) }))
 
             # 2 Minutes
             print(web_data)

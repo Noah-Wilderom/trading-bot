@@ -1,0 +1,23 @@
+success VTHO-EUR
+success 0.00204
+success 0.00189
+success cd549026-9fce-4c80-97e0-619ee40c5014
+<Response [200]>
+{'log': '{"name": "Testing #1", "user": {"id": 1, "name": "NoahDev", "email": "w
+ilderomnoah@gmail.com", "email_verified_at": null, "created_at": "2022-07-27T22:
+39:50.000000Z", "updated_at": "2022-07-27T22:39:50.000000Z"}, "total_profit": -7
+9707.32898576382, "interval": 30, "online": true}'}
+<Response [200]>
+<Response [200]>
+<Response [200]>
+<Response [200]>
+{'name': 'Testing #1', 'user': {'id': 1, 'name': 'NoahDev', 'email': 'wilderomno
+ah@gmail.com', 'email_verified_at': None, 'created_at': '2022-07-27T22:39:50.000
+000Z', 'updated_at': '2022-07-27T22:39:50.000000Z'}, 'total_profit': -82386.1395
+9385382, 'interval': 30, 'online': True}
+<Response [200]>
+
+
+
+
+
